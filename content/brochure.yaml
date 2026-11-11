@@ -19,23 +19,13 @@ identity:
 
 # ESTERNO — anta destra: COPERTINA ###########################################################################
 cover:
-  # Due stili: `mosaic` (foto di studio dei modelli in file sfalsate, su carta) oppure
-  # `photo` (una foto a tutta pagina scurita in basso), es.:
-  #   photo: {path: images/bosco-coppie.jpg, focus_x: 0.5, focus_y: 0.55}
-  # Mosaico: una foto per modello, in ordine di lettura (4 + 3 + 4 posti; logo e titolo stanno sotto).
-  # In riserva c'è anche images/mosaic/urban.webp.
-  mosaic:
-    - images/mosaic/falcade-cavallino.webp  # riga 1 (Falcade donna cavallino bianco e nero)
-    - images/mosaic/cortina.webp            #        (Cortina Dakar testa di moro)
-    - images/mosaic/falcade.webp            #        (Falcade uomo rhum)
-    - images/mosaic/groste.webp
-    - images/mosaic/ortisei.webp            # riga 2
-    - images/mosaic/anfibio-stringato.webp
-    - images/mosaic/lussari.webp
-    - images/mosaic/lagazuoi.webp           # riga 3
-    - images/mosaic/city.webp
-    - images/mosaic/corvara.webp
-    - images/mosaic/orma.webp
+  # Stili: `photo` oppure `mosaic` (foto di studio dei modelli su carta: vedi images/mosaic/).
+  # Con `photo`, `photo_layout` sceglie: `band` (foto in alto intera, testi sotto su fascia
+  # carta) o `full` (foto a tutta pagina scurita in basso, testi chiari sopra).
+  # giardino.jpg = giardino-originale.jpg ritoccata da scripts/ritocca_giardino.py
+  # (senza il gambo davanti alla scarpa, colori del post Instagram).
+  photo: {path: images/giardino.jpg, focus_x: 0.34, focus_y: 0.5, zoom: 1.22}  # zoom: taglia la staccionata a destra
+  photo_layout: band
   title: Pedule urban fashion
   claim: Una storia italiana. Qualità ed eccellenza che si guardano, si toccano e si indossano.
   label: Made in Montebelluna · Italia

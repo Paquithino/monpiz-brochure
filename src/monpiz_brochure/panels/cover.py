@@ -1,6 +1,9 @@
 """Front cover: the logo, a title and the claim, over one of two backgrounds.
 
-- ``photo``: a full-bleed photo darkened at the bottom, light text on it;
+- ``photo`` with ``photo_layout: band``: the photo across the top, edge to
+  edge, over a paper band with the text, so nothing covers the shoes;
+- ``photo`` with ``photo_layout: full``: a full-bleed photo darkened at the
+  bottom, light text on it;
 - ``mosaic``: one studio shot per model in staggered rows on paper, like a
   catalogue flat lay, every shoe whole; text and logo below.
 
@@ -62,11 +65,15 @@ class CoverPanel:
 
     def draw(self, surface: Surface, ctx: RenderContext) -> None:
         p, m = ctx.theme.palette, ctx.theme.grid.margin
-        dark = self.cover.photo is not None
+        dark = self.cover.photo is not None and self.cover.photo_layout == "full"
         text = self._layout(surface, ctx, dark)
         logo = self._logo_box(surface, ctx, text, dark)
-        if self.cover.photo is not None:
+        if dark and self.cover.photo is not None:
             draw_photo(surface, ctx, self.cover.photo, surface.box, scrim=p.forest)
+        elif self.cover.photo is not None:  # band: photo on top, text on paper below it
+            surface.fill(p.paper)
+            band_top = min(text.zone(surface, m).top, logo.top) - CLEAR_MARGIN
+            draw_photo(surface, ctx, self.cover.photo, Box(0, 0, surface.width, band_top))
         else:
             self._draw_mosaic(
                 surface, ctx, top=m, bottom=min(text.zone(surface, m).top, logo.top) - CLEAR_MARGIN
@@ -97,7 +104,7 @@ class CoverPanel:
         )
 
     def _logo_box(self, surface: Surface, ctx: RenderContext, text: _Text, dark: bool) -> Box:
-        """Top left over a photo; bottom right, above the label, under a mosaic (which takes the top)."""
+        """Top left over a full-page photo; otherwise bottom right, above the label, in the text band."""
         m, height = ctx.theme.grid.margin, logo_height(ctx, LOGO_WIDTH)
         if dark:
             return Box(m, m, LOGO_WIDTH, height)

@@ -58,6 +58,11 @@ Due stili, scelti in `cover` nel YAML:
   dispongono nell'ordine della lista, riga per riga.
 - `photo`: una foto a tutta pagina scurita in basso, con testi chiari.
 
+La foto di copertina attuale (`giardino.jpg`) è ritoccata da `scripts/ritocca_giardino.py`
+a partire da `giardino-originale.jpg`: toglie il gambo secco davanti alla scarpa e porta i
+colori verso quelli del post Instagram (`giardino-riferimento-colori.jpg`). Lo script usa
+OpenCV e scikit-image, che non sono dipendenze del progetto: serve solo se si rifà il ritocco.
+
 ### I campioni di pelle
 
 Sull'anta interna sinistra ci sono quattro riquadri (filetto con angoli) in cui incollare

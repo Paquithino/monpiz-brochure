@@ -11,7 +11,7 @@ from __future__ import annotations
 import re
 from collections.abc import Iterator
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
@@ -61,10 +61,15 @@ class Photo(_Model):
 
 
 class Cover(_Model):
-    """Either one full-bleed ``photo`` (dark cover, light text) or a ``mosaic`` of
-    studio shots on paper, in staggered rows (light cover, dark text)."""
+    """Either one ``photo`` or a ``mosaic`` of studio shots on paper, in staggered rows.
+
+    A photo is laid out per ``photo_layout``: ``band`` keeps it whole above a
+    paper band carrying the text (nothing covers the shoes), ``full`` takes the
+    whole page, darkened at the bottom under light text.
+    """
 
     photo: Photo | None = None
+    photo_layout: Literal["band", "full"] = "band"
     mosaic: list[Path] = Field(default_factory=list)  # studio shots on a light backdrop, in order
     title: Text
     claim: Text
