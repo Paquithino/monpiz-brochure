@@ -82,7 +82,7 @@ def draw_heading(
     """Eyebrow, title and an optional italic line under it. Returns the last baseline."""
     t = ctx.theme.type
     surface.text(eyebrow, x, baseline, t.eyebrow)
-    last = surface.paragraph(title, x, baseline + EYEBROW_TO_TITLE, width, t.title)
+    last = surface.paragraph(title, x, baseline + ctx.theme.space(EYEBROW_TO_TITLE), width, t.title)
     if title_italic:
         last = surface.paragraph(title_italic, x, last + t.title.leading, width, t.title_italic)
     return last
@@ -94,7 +94,7 @@ def draw_block_heading(
     """Smaller eyebrow + title, for a block sharing the panel with another. Returns the last baseline."""
     t = ctx.theme.type
     surface.text(eyebrow, x, baseline, t.eyebrow)
-    return surface.paragraph(title, x, baseline + BLOCK_EYEBROW_TO_TITLE, width, t.heading)
+    return surface.paragraph(title, x, baseline + ctx.theme.space(BLOCK_EYEBROW_TO_TITLE), width, t.heading)
 
 
 SPLIT_GAP = 17.0  # each half -> the hairline in the middle (6 mm)

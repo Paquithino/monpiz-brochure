@@ -1,8 +1,9 @@
 """Inside right: how MonPiz was born, beside the network of stores.
 
-The story photo is shown whole, never cropped: the first paragraphs run
-across the column, the last one sits beside the photo, and that pair is
-anchored to the bottom margin so it lines up with the retailers footer.
+The story photo is shown whole, never cropped. When there is room, the first
+paragraphs run across the column and the last one sits beside the photo,
+that pair anchored to the bottom margin; with larger type (or a smaller
+panel) all the text comes first and the photo fills the room left below.
 """
 
 from __future__ import annotations
@@ -20,6 +21,7 @@ PARAGRAPH_GAP = 6.0
 PHOTO_MAX_SHARE = 0.46  # the photo grows to fill the room, up to this share of the column width
 TEXT_TO_PHOTO = 16.0  # last paragraph above -> top of the photo
 PHOTO_GAP = 12.0  # photo -> paragraph beside it
+MIN_PHOTO_HEIGHT = 50.0  # below this the photo is left out rather than shown as a stamp
 
 
 @dataclass(frozen=True, slots=True)
@@ -34,27 +36,59 @@ class StoryPanel:
         draw_retailers(surface, ctx, right, self.retailers)
 
     def _draw_story(self, surface: Surface, ctx: RenderContext, box: Box) -> None:
-        t, s = ctx.theme.type, self.story
-        last = draw_block_heading(surface, ctx, box.x, box.top + 6, box.width, s.eyebrow, s.title)
-        paragraphs = list(s.paragraphs)
-        beside = paragraphs.pop() if s.photo and len(paragraphs) > 1 else None
-
-        baseline = last + TITLE_TO_TEXT
-        for paragraph in paragraphs:
-            last = surface.paragraph(paragraph, box.x, baseline, box.width, t.text)
-            baseline = last + t.text.leading + PARAGRAPH_GAP
-        if not s.photo:
+        """Last paragraph beside the photo when it fits; otherwise all the text first, the photo below."""
+        t, sp, s = ctx.theme.type, ctx.theme.space, self.story
+        heading = draw_block_heading(surface, ctx, box.x, box.top + 6, box.width, s.eyebrow, s.title)
+        first = heading + sp(TITLE_TO_TEXT)
+        if s.photo is None:
+            self._paragraphs(surface, ctx, s.paragraphs, box, first)
             return
 
-        # The whole photo at the bottom left, as large as the room allows, its last paragraph beside it.
         px_w, px_h = ctx.images.size(s.photo.path)
-        room = box.bottom - (last + TEXT_TO_PHOTO)
-        width = min(box.width * PHOTO_MAX_SHARE, room * px_w / px_h)
-        height = width * px_h / px_w
-        photo = Box(box.x, box.bottom - height, width, height)
-        surface.image(ctx.images.fitted(s.photo.path, width, height), photo)
-        if beside:
+        if len(s.paragraphs) > 1:
+            last = self._measure(surface, ctx, s.paragraphs[:-1], box.width, first)
+            width = min(box.width * PHOTO_MAX_SHARE, (box.bottom - last - sp(TEXT_TO_PHOTO)) * px_w / px_h)
+            photo = Box(box.x, box.bottom - width * px_h / px_w, width, width * px_h / px_w)
             x = photo.right + PHOTO_GAP
-            lines = surface.lines(beside, t.text, box.right - x)
-            first = box.bottom - (len(lines) - 1) * t.text.leading
-            surface.paragraph(beside, x, first, box.right - x, t.text)
+            beside = surface.lines(s.paragraphs[-1], t.text, box.right - x)
+            beside_top = box.bottom - (len(beside) - 1) * t.text.leading - t.text.size
+            if beside_top >= last + sp(TEXT_TO_PHOTO) and photo.height >= MIN_PHOTO_HEIGHT:
+                self._paragraphs(surface, ctx, s.paragraphs[:-1], box, first)
+                surface.image(ctx.images.fitted(s.photo.path, photo.width, photo.height), photo)
+                surface.paragraph(
+                    s.paragraphs[-1],
+                    x,
+                    box.bottom - (len(beside) - 1) * t.text.leading,
+                    box.right - x,
+                    t.text,
+                )
+                return
+
+        # Fallback (larger type, smaller panel): the photo whole in the room left under the text.
+        last = self._paragraphs(surface, ctx, s.paragraphs, box, first)
+        room = box.bottom - last - sp(TEXT_TO_PHOTO)
+        width = min(box.width, room * px_w / px_h)
+        height = width * px_h / px_w
+        if height >= MIN_PHOTO_HEIGHT:
+            photo = Box(box.x, box.bottom - height, width, height)
+            surface.image(ctx.images.fitted(s.photo.path, width, height), photo)
+
+    def _paragraphs(
+        self, surface: Surface, ctx: RenderContext, paragraphs: list[str], box: Box, baseline: float
+    ) -> float:
+        """Draw full-width paragraphs from ``baseline``; returns the last baseline."""
+        t, last = ctx.theme.type, baseline
+        for paragraph in paragraphs:
+            last = surface.paragraph(paragraph, box.x, baseline, box.width, t.text)
+            baseline = last + t.text.leading + ctx.theme.space(PARAGRAPH_GAP)
+        return last
+
+    def _measure(
+        self, surface: Surface, ctx: RenderContext, paragraphs: list[str], width: float, baseline: float
+    ) -> float:
+        """Last baseline :meth:`_paragraphs` would reach, without drawing."""
+        t, last = ctx.theme.type, baseline
+        for paragraph in paragraphs:
+            last = baseline + (len(surface.lines(paragraph, t.text, width)) - 1) * t.text.leading
+            baseline = last + t.text.leading + ctx.theme.space(PARAGRAPH_GAP)
+        return last

@@ -38,6 +38,7 @@ class Format(_Model):
     height_mm: float = Field(gt=0)
     panels: int = Field(2, ge=2, le=2)  # the layout is designed for two panels per side
     bleed_mm: float = Field(3.0, ge=0)
+    type_scale: float = Field(1.0, ge=0.7, le=1.6)  # 1.2 = every text 20% larger
 
     def fold_format(self) -> FoldFormat:
         return FoldFormat(self.width_mm, self.height_mm, self.panels, self.bleed_mm)

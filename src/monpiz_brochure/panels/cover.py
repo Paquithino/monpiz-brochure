@@ -91,10 +91,14 @@ class CoverPanel:
         label = t.label.with_color(p.on_dark_accent if dark else p.accent)
 
         bottom = surface.height - m
-        claim_lines = surface.lines(self.cover.claim, claim_style, surface.width * CLAIM_WIDTH)
+        # Without a full-page photo, logo and label sit bottom right, beside the text: keep clear of them.
+        corner = 0.0 if dark else max(LOGO_WIDTH, text_width(self.cover.label, label)) + CLEAR_MARGIN
+        claim_width = min(surface.width * CLAIM_WIDTH, surface.width - 2 * m - corner)
+        claim_lines = surface.lines(self.cover.claim, claim_style, claim_width)
         claim_top = bottom - (len(claim_lines) - 1) * claim_style.leading
-        title_lines = surface.lines(self.cover.title, title_style, surface.width - 2 * m)
-        title_top = claim_top - TITLE_TO_CLAIM - (len(title_lines) - 1) * title_style.leading
+        title_width = surface.width - 2 * m - (0.0 if dark else LOGO_WIDTH + CLEAR_MARGIN)
+        title_lines = surface.lines(self.cover.title, title_style, title_width)
+        title_top = claim_top - ctx.theme.space(TITLE_TO_CLAIM) - (len(title_lines) - 1) * title_style.leading
         return _Text(
             title=[(line, title_top + i * title_style.leading) for i, line in enumerate(title_lines)],
             claim=[(line, claim_top + i * claim_style.leading) for i, line in enumerate(claim_lines)],
