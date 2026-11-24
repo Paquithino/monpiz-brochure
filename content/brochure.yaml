@@ -25,7 +25,11 @@ cover:
   # carta) o `full` (foto a tutta pagina scurita in basso, testi chiari sopra).
   # giardino.jpg = giardino-originale.jpg ritoccata da scripts/ritocca_giardino.py
   # (senza il gambo davanti alla scarpa, colori del post Instagram).
-  photo: {path: images/giardino.jpg, focus_x: 0.5, focus_y: 0.5, zoom: 1.08}  # zoom: taglia la staccionata a destra
+  # Due foto affiancate (photos) sopra la fascia con i testi. La foto del giardino resta
+  # disponibile: photo: {path: images/copertina-giardino.jpg, focus_x: 0.42, focus_y: 0.4, zoom: 1.12}
+  photos:
+    - {path: images/copertina-cavallino.jpg, focus_x: 0.45, focus_y: 0.7}
+    - {path: images/copertina-neve-estesa.jpg, focus_x: 1.0, focus_y: 1.0, zoom: 1.05}  # più neve sotto: scripts/estendi_neve.py
   photo_layout: band
   title: Pedule urban fashion
   claim: Una storia italiana. Qualità ed eccellenza che si guardano, si toccano e si indossano.
@@ -62,7 +66,7 @@ materials:
       text: Grana pronunciata, morbida al tatto. Mantiene nel tempo forma e colore.
       preview: images/pelle-martellata-nera.webp
     - name: Suede
-      text: Pelle scamosciata, vellutata e leggermente ruvida al tatto.
+      text: Pelle scamosciata, vellutata e morbida al tatto.
       preview: images/suede-tabacco.webp
     - name: Cavallino
       text: Texture ricercata e carattere deciso.
@@ -80,6 +84,8 @@ details:
 # INTERNO — anta destra: LA STORIA E LA RETE DI NEGOZI ######################################################
 story:
   eyebrow: Come nasce MonPiz
+  text_scale: 0.84   # testo della storia un po' più piccolo, per dare spazio alla foto
+
   title: Tra tradizione ed innovazione.
   paragraphs:
     - >-
@@ -92,7 +98,7 @@ story:
       dell’eccellenza italiana e migliorando comfort e prestazioni delle pedule
       senza compromettere la qualità. Un twist urbano, a proprio agio su
       qualsiasi terreno.
-  photo: {path: images/heritage.jpg}   # mostrata intera, accanto all'ultimo paragrafo
+  photo: {path: images/heritage.jpg, focus_x: 0.5, focus_y: 0.62}   # 17x12: intera accanto al testo; 15x15: sotto il testo, ritagliata
 
 retailers:
   eyebrow: Dove trovarci

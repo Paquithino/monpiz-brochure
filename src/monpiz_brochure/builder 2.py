@@ -75,7 +75,7 @@ def sides(brochure: Brochure) -> list[tuple[str, Sequence[Panel]]]:
 
 def render(brochure: Brochure, options: BuildOptions, theme: Theme | None = None) -> list[str]:
     """Write the PDF to ``options.output``; returns the print warnings (e.g. low-resolution photos)."""
-    theme = theme or default_theme()
+    theme = theme or default_theme(brochure.format.type_scale)
     register_fonts(options.assets_dir / "fonts")
     ctx = RenderContext(
         theme,

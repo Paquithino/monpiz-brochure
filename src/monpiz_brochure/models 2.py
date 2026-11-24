@@ -38,6 +38,7 @@ class Format(_Model):
     height_mm: float = Field(gt=0)
     panels: int = Field(2, ge=2, le=2)  # the layout is designed for two panels per side
     bleed_mm: float = Field(3.0, ge=0)
+    type_scale: float = Field(1.0, ge=0.7, le=1.6)  # 1.2 = every text 20% larger
 
     def fold_format(self) -> FoldFormat:
         return FoldFormat(self.width_mm, self.height_mm, self.panels, self.bleed_mm)
@@ -102,7 +103,11 @@ class Story(_Model):
     eyebrow: Text
     title: Text
     paragraphs: list[Text] = Field(min_length=1, max_length=3)
-    photo: Photo | None = None  # fills the room left under the text
+    text_scale: float = Field(1.0, ge=0.6, le=1.2)  # body text relative to the rest (0.85 = 15% smaller)
+    photo: Photo | None = None
+    # below: under all the text, across the column, cropped to fill the room (default);
+    # beside: whole, at the bottom left, with the last paragraph to its right.
+    photo_layout: Literal["below", "beside"] = "below"
 
 
 class Detail(_Model):

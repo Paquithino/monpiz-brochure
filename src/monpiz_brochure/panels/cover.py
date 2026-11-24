@@ -2,6 +2,7 @@
 
 - ``photo`` with ``photo_layout: band``: the photo across the top, edge to
   edge, over a paper band with the text, so nothing covers the shoes;
+- ``photos``: two photos side by side in that band, split by a thin gutter;
 - ``photo`` with ``photo_layout: full``: a full-bleed photo darkened at the
   bottom, light text on it;
 - ``mosaic``: one studio shot per model in staggered rows on paper, like a
@@ -33,7 +34,8 @@ LOGO_TO_LABEL = 9.0  # mosaic cover: logo bottom -> label cap height
 MOSAIC_COLUMNS = 4
 MOSAIC_ROWS = 3
 TILE_RATIO = 1.45  # width / height of a slot: most shots show a boot and its sole side by side
-CLEAR_MARGIN = mm(4.0)  # free space kept around the logo and the text
+CLEAR_MARGIN = mm(4.0)
+PHOTO_GUTTER = mm(1.5)  # paper between two cover photos  # free space kept around the logo and the text
 
 
 @dataclass(frozen=True, slots=True)
@@ -70,10 +72,13 @@ class CoverPanel:
         logo = self._logo_box(surface, ctx, text, dark)
         if dark and self.cover.photo is not None:
             draw_photo(surface, ctx, self.cover.photo, surface.box, scrim=p.forest)
-        elif self.cover.photo is not None:  # band: photo on top, text on paper below it
+        elif self.cover.photo is not None or self.cover.photos:  # band: photos on top, text below
             surface.fill(p.paper)
-            band_top = min(text.zone(surface, m).top, logo.top) - CLEAR_MARGIN
-            draw_photo(surface, ctx, self.cover.photo, Box(0, 0, surface.width, band_top))
+            band = min(text.zone(surface, m).top, logo.top) - CLEAR_MARGIN
+            photos = [self.cover.photo] if self.cover.photo is not None else self.cover.photos
+            width = (surface.width - PHOTO_GUTTER * (len(photos) - 1)) / len(photos)
+            for index, photo in enumerate(photos):
+                draw_photo(surface, ctx, photo, Box(index * (width + PHOTO_GUTTER), 0, width, band))
         else:
             self._draw_mosaic(
                 surface, ctx, top=m, bottom=min(text.zone(surface, m).top, logo.top) - CLEAR_MARGIN

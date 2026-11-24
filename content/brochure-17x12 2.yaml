@@ -61,7 +61,7 @@ materials:
       text: Grana pronunciata, morbida al tatto. Mantiene nel tempo forma e colore.
       preview: images/pelle-martellata-nera.webp
     - name: Suede
-      text: Pelle scamosciata, vellutata e leggermente ruvida al tatto.
+      text: Pelle scamosciata, vellutata e morbida al tatto.
       preview: images/suede-tabacco.webp
     - name: Cavallino
       text: Texture ricercata e carattere deciso.
@@ -91,6 +91,7 @@ story:
       dell’eccellenza italiana e migliorando comfort e prestazioni delle pedule
       senza compromettere la qualità. Un twist urbano, a proprio agio su
       qualsiasi terreno.
+  photo_layout: beside
   photo: {path: images/heritage.jpg}   # mostrata intera, accanto all'ultimo paragrafo
 
 retailers:

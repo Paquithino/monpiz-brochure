@@ -62,14 +62,16 @@ class Photo(_Model):
 
 
 class Cover(_Model):
-    """Either one ``photo`` or a ``mosaic`` of studio shots on paper, in staggered rows.
+    """One background: a ``photo``, two ``photos`` side by side, or a ``mosaic`` of studio shots.
 
-    A photo is laid out per ``photo_layout``: ``band`` keeps it whole above a
+    A single photo is laid out per ``photo_layout``: ``band`` keeps it above a
     paper band carrying the text (nothing covers the shoes), ``full`` takes the
-    whole page, darkened at the bottom under light text.
+    whole page, darkened at the bottom under light text. Two photos always use
+    the band, split by a thin paper gutter.
     """
 
     photo: Photo | None = None
+    photos: list[Photo] = Field(default_factory=list, max_length=2)
     photo_layout: Literal["band", "full"] = "band"
     mosaic: list[Path] = Field(default_factory=list)  # studio shots on a light backdrop, in order
     title: Text
@@ -78,8 +80,8 @@ class Cover(_Model):
 
     @model_validator(mode="after")
     def _one_background(self) -> Cover:
-        if (self.photo is None) == (not self.mosaic):
-            raise ValueError("serve `photo` oppure `mosaic` (uno dei due)")
+        if sum([self.photo is not None, bool(self.photos), bool(self.mosaic)]) != 1:
+            raise ValueError("serve uno solo tra `photo`, `photos` e `mosaic`")
         return self
 
 
@@ -103,7 +105,11 @@ class Story(_Model):
     eyebrow: Text
     title: Text
     paragraphs: list[Text] = Field(min_length=1, max_length=3)
-    photo: Photo | None = None  # fills the room left under the text
+    text_scale: float = Field(1.0, ge=0.6, le=1.2)  # body text relative to the rest (0.85 = 15% smaller)
+    photo: Photo | None = None
+    # below: under all the text, across the column, cropped to fill the room (default);
+    # beside: whole, at the bottom left, with the last paragraph to its right.
+    photo_layout: Literal["below", "beside"] = "below"
 
 
 class Detail(_Model):
@@ -210,6 +216,8 @@ class Brochure(_Model):
         yield self.identity.logo
         if self.cover.photo:
             yield self.cover.photo.path
+        for photo in self.cover.photos:
+            yield photo.path
         yield from self.cover.mosaic
         if self.story.photo:
             yield self.story.photo.path

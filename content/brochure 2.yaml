@@ -13,6 +13,7 @@ format:
   width_mm: 150
   height_mm: 150
   bleed_mm: 3
+  type_scale: 1.2        # grandezza dei testi: 1 = come nel 17x12, 1.2 = +20% (consigliato per il 15x15)
 
 identity:
   logo: images/logo.png
@@ -24,7 +25,7 @@ cover:
   # carta) o `full` (foto a tutta pagina scurita in basso, testi chiari sopra).
   # giardino.jpg = giardino-originale.jpg ritoccata da scripts/ritocca_giardino.py
   # (senza il gambo davanti alla scarpa, colori del post Instagram).
-  photo: {path: images/giardino.jpg, focus_x: 0.5, focus_y: 0.5, zoom: 1.08}  # zoom: taglia la staccionata a destra
+  photo: {path: images/copertina-giardino.jpg, focus_x: 0.45, focus_y: 0.45, zoom: 1.1}  # sviluppata e ritoccata dal RAW: scripts/sviluppa_copertina.py
   photo_layout: band
   title: Pedule urban fashion
   claim: Una storia italiana. Qualità ed eccellenza che si guardano, si toccano e si indossano.
@@ -52,7 +53,7 @@ materials:
   title: I nostri materiali
   # Misura di ogni campione da incollare: il riquadro stampato è 2 mm più largo per lato.
   swatch_width_mm: 26
-  swatch_height_mm: 26
+  swatch_height_mm: 34
   items:   # `preview` serve solo per l'anteprima a schermo (--swatch-preview)
     - name: Pelle Dakar
       text: Cuoio bovino lavorato con oli, cere e grassi. Con l'uso sviluppa una patina unica.
@@ -61,7 +62,7 @@ materials:
       text: Grana pronunciata, morbida al tatto. Mantiene nel tempo forma e colore.
       preview: images/pelle-martellata-nera.webp
     - name: Suede
-      text: Pelle scamosciata, vellutata e leggermente ruvida al tatto.
+      text: Pelle scamosciata, vellutata e morbida al tatto.
       preview: images/suede-tabacco.webp
     - name: Cavallino
       text: Texture ricercata e carattere deciso.
@@ -79,6 +80,8 @@ details:
 # INTERNO — anta destra: LA STORIA E LA RETE DI NEGOZI ######################################################
 story:
   eyebrow: Come nasce MonPiz
+  text_scale: 0.84   # testo della storia un po' più piccolo, per dare spazio alla foto
+
   title: Tra tradizione ed innovazione.
   paragraphs:
     - >-
@@ -91,7 +94,7 @@ story:
       dell’eccellenza italiana e migliorando comfort e prestazioni delle pedule
       senza compromettere la qualità. Un twist urbano, a proprio agio su
       qualsiasi terreno.
-  photo: {path: images/heritage.jpg}   # mostrata intera, accanto all'ultimo paragrafo
+  photo: {path: images/heritage.jpg, focus_x: 0.5, focus_y: 0.62}   # 17x12: intera accanto al testo; 15x15: sotto il testo, ritagliata
 
 retailers:
   eyebrow: Dove trovarci

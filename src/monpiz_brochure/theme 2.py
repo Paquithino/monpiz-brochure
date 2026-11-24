@@ -7,7 +7,7 @@ an A4 page. All measurements are in points.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, fields, replace
 from enum import StrEnum
 
 from reportlab.lib.colors import Color, HexColor
@@ -50,6 +50,11 @@ class TextStyle:
     def with_color(self, color: Color) -> TextStyle:
         return replace(self, color=color)
 
+    def scaled(self, factor: float) -> TextStyle:
+        return replace(
+            self, size=self.size * factor, leading=self.leading * factor, tracking=self.tracking * factor
+        )
+
 
 @dataclass(frozen=True, slots=True)
 class Typography:
@@ -80,9 +85,15 @@ class Theme:
     palette: Palette
     type: Typography
     grid: Grid
+    scale: float = 1.0  # type scale: vertical gaps tied to the text grow with it
+
+    def space(self, points: float) -> float:
+        """A vertical gap between lines of text, scaled with the type."""
+        return points * self.scale
 
 
-def default_theme() -> Theme:
+def default_theme(type_scale: float = 1.0) -> Theme:
+    """The MonPiz theme; ``type_scale`` enlarges every text style (1.2 = 20% larger)."""
     p = Palette(
         ink=HexColor("#24291F"),
         body=HexColor("#4B5245"),
@@ -109,4 +120,6 @@ def default_theme() -> Theme:
         value=TextStyle(Font.SANS, 7.6, 10.0, p.ink),
         city=TextStyle(Font.SERIF, 6.2, 7.5, p.ink),
     )
-    return Theme(palette=p, type=t, grid=Grid())
+    if type_scale != 1.0:
+        t = Typography(**{f.name: getattr(t, f.name).scaled(type_scale) for f in fields(Typography)})
+    return Theme(palette=p, type=t, grid=Grid(), scale=type_scale)
